@@ -1,0 +1,141 @@
+{% extends 'shop/basic.html' %}
+
+{% block title %} Shop Home {% endblock %}
+{% block css %}
+
+<!-- CUSTOM CSS -->
+<style>
+  .carousel-indicators .active,
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    background-color: blue;
+  }
+
+
+  .card-img,
+  .card-img-bottom,
+  .card-img-top {
+    height: 258px;
+  }
+</style>
+
+{% endblock%}
+
+{% block body %}
+<!-- CAROUSEL -->
+
+
+{% for products, nSlides, range, category in allProds%}
+<div id="carouselExampleIndicators{{forloop.counter}}" class="carousel slide my-4" data-bs-ride="carousel">
+  <div class="container">
+    <h1 class="my-4">{{category}}</h1>
+  </div>
+  <!-- <div class="carousel-indicators">
+    <button type="button" data-bs-target="#carouselExampleIndicators{{forloop.counter}}" data-bs-slide-to="0"
+      class="active" aria-current="true" aria-label="Slide 0"></button>
+
+    {% for i in range %}
+    <button type="button" data-bs-target="#carouselExampleIndicators{{forloop.parentloop.counter}}"
+      data-bs-slide-to="{{i}}" aria-label="Slide {{i}}"></button>
+    {% endfor %}
+  </div> -->
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+
+      <!-- CARDS -->
+      <div class="container">
+        <div class="row">
+
+          {% for i in products|slice:"0:4" %} <div class="col-xs-3 col-sm-3 col-md-3">
+            <div class="card" style="width: 18rem;">
+              <img src=" /media/{{i.image}}" class="card-img-top" alt="Image Alt Text">
+              <div class="card-body">
+                <h5 class="card-title">{{ i.product_name }}</h5>
+                <p class="card-text">{{ i.desc }}</p>
+                <a id="pr{{ i.id }}" class="btn btn-primary cart">Go somewhere</a>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+
+        </div>
+      </div>
+    </div>
+
+    {% if products|length > 4 %}
+    <div class="carousel-item">
+      <div class="container">
+        <div class="row">
+
+          {% for i in products|slice:"4:" %}
+          <div class="col-xs-3 col-sm-3 col-md-3">
+            <div class="card" style="width: 18rem;">
+              <img src="/media/{{i.image}}" class="card-img-top" alt="Image Alt Text">
+              <div class="card-body">
+                <h5 class="card-title">{{ i.product_name }}</h5>
+                <p class="card-text">{{ i.desc }}</p>
+                <a id="pr{{i.id}}" class="btn btn-primary cart">Go somewhere</a>
+              </div>
+            </div>
+          </div>
+
+          {% if forloop.counter|divisibleby:4 and forloop.counter > 0 and not forloop.last %}
+        </div>
+      </div>
+    </div>
+    <div class="carousel-item">
+      <div class="container">
+        <div class="row">
+
+          {% endif %}
+
+
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    {% endif %}
+
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators{{forloop.counter}}"
+    data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators{{forloop.counter}}"
+    data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
+
+{% endfor %}
+{% endblock%}
+
+{% block js %}
+
+<script>
+  if (localStorage.getItem('cart') == null) {
+    var cart = {};
+  }
+  else {
+    cart = JSON.parse(localStorage.getItem('cart'));
+  }
+
+  $('.cart').click(function () {
+    console.log('clicked');
+
+    var idStr = this.id.toString();
+    if (cart[idStr] != undefined) {
+      cart[idStr] = cart[idStr] + 1;
+    }
+    else {
+      cart[idStr] = 1;
+    }
+    console.log(cart);
+    localStorage.setItem('cart', JSON.stringify(cart));
+  });
+</script>
+
+{% endblock %}
