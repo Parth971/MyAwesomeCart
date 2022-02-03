@@ -1,0 +1,49 @@
+{% extends 'shop/basic.html' %}
+
+{% block title %} Shop {{product.product_name}} {% endblock %}
+
+{% block css %}
+
+<style>
+     .product-image-container,
+     .product-content {
+          margin-top: 50px;
+     }
+
+     .product-image-container {
+          text-align: center;
+     }
+
+     .product-image-container img {
+          width: 300px;
+          height: auto;
+     }
+
+     .product-content {}
+</style>
+
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+     <div class="row">
+          <div class="col-md-5">
+               <div class="product-image-container">
+                    <img src="/media/{{product.image}}" alt="Product id:{{product.product_id}} Image">
+               </div>
+          </div>
+          <div class="col-md-7">
+               <div class="product-content">
+                    <h1>{{product.product_name}}</h1>
+                    <h4>Category: {{product.category}}</h4>
+                    <h6>Sub Category: {{product.subcategory}}</h6>
+                    <p>Price:<b> Rs.{{product.price}}</b></p>
+                    <p>Description: {{product.desc}}</p>
+               </div>
+          </div>
+     </div>
+</div>
+
+
+{% endblock %}

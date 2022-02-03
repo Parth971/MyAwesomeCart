@@ -1,0 +1,118 @@
+{% extends 'shop/basic.html' %}
+
+{% block title %} Shop Tracker {% endblock %}
+
+{% block body %}
+
+<div class="container">
+     <div class="row">
+          <div class="col-md-12 my-4">
+               <h1>Enter Order ID and Email to Track Order</h1>
+               <form method="post" action="#" id="trackerForm" onsubmit="return false">
+                    {% csrf_token %}
+                    <div class="row mb-3">
+                         <div class="col">
+                              <input type="text" class="form-control" placeholder="Order Id" name="orderId">
+                         </div>
+                         <div class="col">
+                              <input type="email" class="form-control" placeholder="Email" name="email">
+                         </div>
+                    </div>
+
+                    <div class="col-md-12 my-4">
+                         <ol class="list-group list-group-numbered" id="alertId">
+                              <div class="alert alert-secondary" role="alert">
+                                   Enter Your Email and Order ID to track details of your order.
+                              </div>
+                         </ol>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Track Order</button>
+               </form>
+          </div>
+          <div class="col-md-12 my-4">
+               <h1>Here is your Order Status</h1>
+               <ol class="list-group list-group-numbered" id="items">
+                    <div class="alert alert-info" role="alert">
+                         Here Order Tracking will be shown after you click track order button.
+                    </div>
+               </ol>
+          </div>
+          <div class="col-md-12 my-4">
+               <h1>Here is your Order Details</h1>
+               <ol class="list-group list-group-numbered" id="citems">
+                    <div class="alert alert-info" role="alert">
+                         Here Order details will be shown after you click track order button.
+                    </div>
+               </ol>
+          </div>
+     </div>
+</div>
+</div>
+
+
+{% endblock %}
+
+
+{% block js %}
+
+<script>
+     $('#trackerForm').submit(function (event) {
+
+          var formData = {
+               'orderId': $('input[name=orderId]').val(),
+               'email': $('input[name=email]').val(),
+               'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+          }
+          $.ajax({
+               type: 'POST',
+               url: '/shop/tracker/',
+               data: formData,
+               encode: true,
+          }).done(function (data) {
+               data = JSON.parse(data)
+               if (data["status"] == "success") {
+                    updates = data["updates"];
+                    $('#items').empty();
+                    $('#citems').empty();
+                    $('#alertId').empty();
+                    for (i = 0; i < updates.length; i++) {
+                         let text = updates[i]['text'];
+                         let time = updates[i]['time'];
+                         mystr = `<li class="list-group-item d-flex justify-content-between align-items-start">
+                                   <div class="ms-2 me-auto">
+                                        <div class="fw-bold">`+ text + `</div>
+                                   </div>
+                                   <span class="badge bg-primary rounded-pill">`+ time + `</span>
+                                   </li>`
+                         $('#items').append(mystr);
+                    }
+                    // data = JSON.parse(data[1]);
+                    var cart = JSON.parse(data["itemsJson"]);
+                    for (var item in cart) {
+                         mystr = `<li class="list-group-item d-flex justify-content-between align-items-start">
+                                   <div class="ms-2 me-auto">
+                                        <div class="fw-bold">`+ cart[item][0] + `</div>
+                                   </div>
+                                   <span class="badge bg-primary rounded-pill">`+ cart[item][1] + `</span>
+                                   </li>`
+                         $('#citems').append(mystr);
+                    }
+               } else {
+                    $("#alertId").html(`<div class="alert alert-secondary" role="alert">
+                                   Enter Your Email and Order ID to track details of your order.
+                              </div>`);
+                    $("#alertId .alert").removeClass("alert-secondary").addClass("alert-danger");
+
+                    $("#items").html(`<div class="alert alert-info" role="alert">
+                         Here Order Tracking will be shown after you click track order button.
+                    </div>`);
+                    $("#citems").html(`<div class="alert alert-info" role="alert">
+                         Here Order details will be shown after you click track order button.
+                    </div>`);
+               }
+          });
+          event.preventDefault();
+     });
+</script>
+
+{% endblock %}
